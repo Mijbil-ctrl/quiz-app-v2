@@ -46,31 +46,45 @@ def extract_text(filepath):
     return text
 
 
-def parse_questions(text):
+import re
 
-    import re
+def parse_questions(text):
 
     questions = []
 
-    # Clean text
-    text = text.replace("\r", " ")
-    text = re.sub(r'\s+', ' ', text)
+    # Split using real question markers like Q.1), Q.2) etc
+    parts = re.split(r'Q\.\d+\)', text)
 
-    # Look for patterns like: "1) .... 2) ...."
-    parts = re.split(r'\s(?=\d+\))', text)
+    for part in parts[1:]:   # ignore everything before first question
+        lines = part.strip().split("\n")
 
-    for p in parts:
+        question_text = ""
+        options = []
 
-        # Only take segments that look like real questions
-        if re.match(r'\d+\)', p.strip()):
-            q = p.strip()
+        for line in lines:
+            line = line.strip()
 
-            # Ignore very long instruction pages
-            if len(q) < 1500:
-                questions.append(q)
+            # Detect options (a), (b), (c), (d)
+            if re.match(r'^[a-d]\)', line):
+                options.append(line[2:].strip())
+
+            # Stop collecting if next question begins
+            elif re.match(r'^Q\.\d+\)', line):
+                break
+
+            else:
+                question_text += " " + line
+
+        question_text = question_text.strip()
+
+        # Only accept if real MCQ detected
+        if question_text and len(options) >= 2:
+            questions.append({
+                "question": question_text,
+                "options": options
+            })
 
     return questions
-
 
 
 # ---------- ROUTES ----------
@@ -122,7 +136,8 @@ def quiz():
     with open("temp_questions.txt", "r", encoding="utf-8") as f:
         data = f.read()
 
-    questions = [q for q in data.split("\n---\n") if q.strip()]
+   questions = parse_questions(text)
+
 
 
     return render_template("quiz.html",
