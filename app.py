@@ -128,17 +128,16 @@ def settings():
 
 
 @app.route('/quiz')
+
 def quiz():
 
     if not os.path.exists("temp_questions.txt"):
         return "<h3>No questions loaded. Please upload a PDF first.</h3><a href='/'>Go Home</a>"
 
     with open("temp_questions.txt", "r", encoding="utf-8") as f:
-        data = f.read()
+        text = f.read()
 
     questions = parse_questions(text)
-
-
 
     return render_template("quiz.html",
                            questions=questions,
