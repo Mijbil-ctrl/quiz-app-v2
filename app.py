@@ -4,7 +4,8 @@ import os
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = "quiz_secret_key"
+app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_12345")
+
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
