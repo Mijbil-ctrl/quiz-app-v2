@@ -304,5 +304,43 @@ def parse_forum_solution(text):
         answers[int(qno)] = ans.upper()
 
     return answers
+@app.route("/submit", methods=["POST"])
+def submit():
+
+    user_answers = request.json["answers"]
+    questions = session.get("questions", [])
+
+    score = 0
+    correct = 0
+    wrong = 0
+    unattempted = 0
+
+    for i, q in enumerate(questions):
+
+        qno = str(i+1)
+        correct_ans = q.get("correct")
+
+        user_ans = user_answers.get(qno)
+
+        if not user_ans:
+            unattempted += 1
+
+        elif user_ans == correct_ans:
+            score += 2
+            correct += 1
+
+        else:
+            score -= 0.66
+            wrong += 1
+
+    result = {
+        "score": round(score, 2),
+        "correct": correct,
+        "wrong": wrong,
+        "unattempted": unattempted,
+        "total": len(questions)
+    }
+
+    return result
 
 
