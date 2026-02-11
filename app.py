@@ -130,7 +130,63 @@ def bank():
     conn.close()
 
     return render_template("bank.html", data=data)
+    
 
+# ----------- PRACTICE MODE -----------
+
+@app.route('/practice', methods=['GET', 'POST'])
+def practice():
+
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+
+    if request.method == 'POST':
+
+        subject = request.form['subject']
+        topic = request.form['topic']
+        subtopic = request.form['subtopic']
+        time = int(request.form['time'])
+
+        query = "SELECT question FROM questions WHERE 1=1"
+        params = []
+
+        if subject:
+            query += " AND subject=?"
+            params.append(subject)
+
+        if topic:
+            query += " AND topic=?"
+            params.append(topic)
+
+        if subtopic:
+            query += " AND subtopic=?"
+            params.append(subtopic)
+
+        c.execute(query, params)
+        data = c.fetchall()
+
+        questions = [d[0] for d in data]
+
+        session["questions"] = questions
+        session["time"] = time
+
+        return redirect(url_for("quiz"))
+
+    c.execute("SELECT DISTINCT subject FROM questions")
+    subjects = c.fetchall()
+
+    c.execute("SELECT DISTINCT topic FROM questions")
+    topics = c.fetchall()
+
+    c.execute("SELECT DISTINCT subtopic FROM questions")
+    subtopics = c.fetchall()
+
+    conn.close()
+
+    return render_template("practice.html",
+                           subjects=subjects,
+                           topics=topics,
+                           subtopics=subtopics)
 
 if __name__ == '__main__':
     app.run(debug=True)
