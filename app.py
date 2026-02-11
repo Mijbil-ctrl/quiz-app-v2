@@ -166,7 +166,13 @@ def upload():
         qno = i + 1
         q["correct"] = answers.get(qno)
 
-    session["questions"] = questions
+   import json
+
+    with open("current_quiz.json", "w", encoding="utf-8") as f:
+        json.dump(questions, f)
+    
+    session["quiz_loaded"] = True
+
 
     return redirect(url_for("settings"))
 
@@ -187,16 +193,23 @@ def settings():
 def quiz():
 
     try:
-        if not os.path.exists("temp_questions.json"):
+        # Check if a quiz has been uploaded
+        if not session.get("quiz_loaded"):
             return "<h3>No questions loaded. Please upload a PDF first.</h3><a href='/'>Go Home</a>"
 
-        with open("temp_questions.json", "r", encoding="utf-8") as f:
+        # Load questions from server file instead of session
+        if not os.path.exists("current_quiz.json"):
+            return "<h3>Quiz file missing. Please upload again.</h3><a href='/'>Go Home</a>"
+
+        with open("current_quiz.json", "r", encoding="utf-8") as f:
             questions = json.load(f)
 
-        return render_template("quiz.html",
-                               questions=questions,
-                               total=len(questions),
-                               time=session.get("time", 60))
+        return render_template(
+            "quiz.html",
+            questions=questions,
+            total=len(questions),
+            time=session.get("time", 60)
+        )
 
     except Exception as e:
         return f"<h3>Error in quiz page:</h3><pre>{str(e)}</pre>"
@@ -323,7 +336,9 @@ def parse_forum_solution(text):
 def submit():
 
     user_answers = request.json["answers"]
-    questions = session.get("questions", [])
+    with open("current_quiz.json", "r", encoding="utf-8") as f:
+    questions = json.load(f)
+
 
     score = 0
     correct = 0
