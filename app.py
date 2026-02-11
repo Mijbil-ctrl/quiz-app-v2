@@ -136,7 +136,7 @@ def quiz():
     with open("temp_questions.txt", "r", encoding="utf-8") as f:
         data = f.read()
 
-   questions = parse_questions(text)
+    questions = parse_questions(text)
 
 
 
