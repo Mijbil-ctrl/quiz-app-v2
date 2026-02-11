@@ -82,6 +82,7 @@ def home():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+
     file = request.files['pdf']
 
     path = os.path.join(UPLOAD_FOLDER, file.filename)
@@ -89,13 +90,18 @@ def upload():
 
     text = extract_text(path)
     questions = parse_questions(text)
+
     print("---- DEBUG INFO ----")
     print("Text Length:", len(text))
     print("Questions Extracted:", len(questions))
 
-    session["questions"] = questions
+    # Instead of session, store in temp file (more reliable on Render)
+    with open("temp_questions.txt", "w", encoding="utf-8") as f:
+        for q in questions:
+            f.write(q + "\n---\n")
 
     return redirect(url_for("settings"))
+
 
 
 @app.route('/settings', methods=['GET', 'POST'])
@@ -110,15 +116,19 @@ def settings():
 @app.route('/quiz')
 def quiz():
 
-    questions = session.get("questions")
-
-    if not questions:
+    if not os.path.exists("temp_questions.txt"):
         return "<h3>No questions loaded. Please upload a PDF first.</h3><a href='/'>Go Home</a>"
+
+    with open("temp_questions.txt", "r", encoding="utf-8") as f:
+        data = f.read()
+
+    questions = data.split("\n---\n")
 
     return render_template("quiz.html",
                            questions=questions,
                            total=len(questions),
                            time=session.get("time", 60))
+
 
 
 
