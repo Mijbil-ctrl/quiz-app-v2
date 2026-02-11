@@ -84,12 +84,17 @@ def settings():
 
 @app.route('/quiz')
 def quiz():
-    questions = session.get("questions", [])
+
+    questions = session.get("questions")
+
+    if not questions:
+        return "<h3>No questions loaded. Please upload a PDF first.</h3><a href='/'>Go Home</a>"
 
     return render_template("quiz.html",
                            questions=questions,
                            total=len(questions),
                            time=session.get("time", 60))
+
 
 
 # ---------- SAVE QUESTION TO BANK ----------
