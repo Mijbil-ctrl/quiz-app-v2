@@ -39,3 +39,18 @@ function startTimer(min) {
 
     }, 1000);
 }
+function saveQuestion(i) {
+
+    let question = document.getElementById("text" + i).innerText;
+    let subject = document.getElementById("subject" + i).value;
+    let topic = document.getElementById("topic" + i).value;
+    let subtopic = document.getElementById("subtopic" + i).value;
+
+    fetch("/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `question=${question}&subject=${subject}&topic=${topic}&subtopic=${subtopic}`
+    });
+
+    alert("Saved to Question Bank!");
+}
