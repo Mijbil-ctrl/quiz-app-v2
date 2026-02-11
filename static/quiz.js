@@ -77,3 +77,6 @@ function submitQuiz() {
         );
     });
 }
+function markAttempted(qno) {
+    document.getElementById("nav" + qno).classList.add("attempted");
+}
