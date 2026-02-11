@@ -27,9 +27,9 @@
 <div class="options">
 {% for option in q.options %}
     <label>
-        <input type="radio" 
-               name="q{{loop.index}}" 
-               onclick="selectAnswer('{{loop.index}}', '{{option[0]}}')">
+        <input type="radio" name="q{{loop.index}}" 
+       onclick="markAttempted({{loop.index}})">
+
         {{ option }}
     </label><br>
 {% endfor %}
@@ -68,8 +68,11 @@ Save to My Bank
 <h4>Navigate</h4>
 
 {% for q in questions %}
-<button onclick="jump({{loop.index}})">{{loop.index}}</button>
+<button id="nav{{loop.index}}" class="nav-btn" onclick="jump({{loop.index}})">
+    {{loop.index}}
+</button>
 {% endfor %}
+
 
 <br><br>
 
