@@ -166,7 +166,7 @@ def upload():
         qno = i + 1
         q["correct"] = answers.get(qno)
 
-   import json
+   
 
     with open("current_quiz.json", "w", encoding="utf-8") as f:
         json.dump(questions, f)
@@ -315,7 +315,7 @@ def practice():
                            subtopics=subtopics)
 
 if __name__ == '__main__':
-    import os
+
 port = int(os.environ.get("PORT", 5000))
 app.run(host="0.0.0.0", port=port)
 import re
