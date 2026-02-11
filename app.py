@@ -94,6 +94,10 @@ def home():
     return render_template("upload.html")
 
 
+
+import json
+
+
 @app.route('/upload', methods=['POST'])
 def upload():
 
@@ -109,10 +113,11 @@ def upload():
     print("Text Length:", len(text))
     print("Questions Extracted:", len(questions))
 
-    # Instead of session, store in temp file (more reliable on Render)
-    with open("temp_questions.txt", "w", encoding="utf-8") as f:
-        for q in questions:
-            f.write(q + "\n---\n")
+    # SAVE QUESTIONS AS JSON INSTEAD OF PLAIN TEXT
+    with open("temp_questions.json", "w", encoding="utf-8") as f:
+        json.dump(questions, f)
+
+    session["questions_loaded"] = True
 
     return redirect(url_for("settings"))
 
@@ -127,22 +132,26 @@ def settings():
     return render_template("settings.html")
 
 
-@app.route('/quiz')
 
+
+@app.route('/quiz')
 def quiz():
 
-    if not os.path.exists("temp_questions.txt"):
-        return "<h3>No questions loaded. Please upload a PDF first.</h3><a href='/'>Go Home</a>"
+    try:
+        if not os.path.exists("temp_questions.json"):
+            return "<h3>No questions loaded. Please upload a PDF first.</h3><a href='/'>Go Home</a>"
 
-    with open("temp_questions.txt", "r", encoding="utf-8") as f:
-        text = f.read()
+        with open("temp_questions.json", "r", encoding="utf-8") as f:
+            questions = json.load(f)
 
-    questions = parse_questions(text)
+        return render_template("quiz.html",
+                               questions=questions,
+                               total=len(questions),
+                               time=session.get("time", 60))
 
-    return render_template("quiz.html",
-                           questions=questions,
-                           total=len(questions),
-                           time=session.get("time", 60))
+    except Exception as e:
+        return f"<h3>Error in quiz page:</h3><pre>{str(e)}</pre>"
+
 
 
 
