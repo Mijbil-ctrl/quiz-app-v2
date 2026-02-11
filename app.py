@@ -1,12 +1,38 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import PyPDF2
 import os
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "quiz_secret_key"
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+DB = "database.db"
+
+# ---------- DATABASE SETUP ----------
+
+def init_db():
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS questions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        question TEXT,
+        subject TEXT,
+        topic TEXT,
+        subtopic TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# ---------- PDF PROCESSING ----------
 
 def extract_text(filepath):
     text = ""
@@ -24,6 +50,8 @@ def parse_questions(text):
 
     return questions
 
+
+# ---------- ROUTES ----------
 
 @app.route('/')
 def home():
@@ -64,30 +92,46 @@ def quiz():
                            time=session.get("time", 60))
 
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    questions = session.get("questions", [])
-    total = len(questions)
+# ---------- SAVE QUESTION TO BANK ----------
 
-    answers = request.form.getlist("answer")
+@app.route('/save', methods=['POST'])
+def save():
 
-    correct = 0
-    wrong = 0
+    q = request.form['question']
+    subject = request.form['subject']
+    topic = request.form['topic']
+    subtopic = request.form['subtopic']
 
-    for a in answers:
-        if a == "correct":
-            correct += 1
-        elif a == "wrong":
-            wrong += 1
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
 
-    score = correct * 2 - wrong * 0.66
+    c.execute("""
+    INSERT INTO questions (question, subject, topic, subtopic)
+    VALUES (?, ?, ?, ?)
+    """, (q, subject, topic, subtopic))
 
-    return render_template("result.html",
-                           total=total,
-                           correct=correct,
-                           wrong=wrong,
-                           score=round(score, 2))
+    conn.commit()
+    conn.close()
+
+    return "saved"
+
+
+# ---------- VIEW BANK ----------
+
+@app.route('/bank')
+def bank():
+
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM questions")
+    data = c.fetchall()
+
+    conn.close()
+
+    return render_template("bank.html", data=data)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
