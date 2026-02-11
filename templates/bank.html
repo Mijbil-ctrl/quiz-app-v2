@@ -1,0 +1,35 @@
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>My Saved Questions</h2>
+
+<table border="1">
+
+<tr>
+<th>Question</th>
+<th>Subject</th>
+<th>Topic</th>
+<th>Subtopic</th>
+</tr>
+
+{% for q in data %}
+<tr>
+<td>{{q[1]}}</td>
+<td>{{q[2]}}</td>
+<td>{{q[3]}}</td>
+<td>{{q[4]}}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</div>
+
+</body>
+</html>
