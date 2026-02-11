@@ -1,0 +1,66 @@
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/quiz.js"></script>
+</head>
+
+<body onload="startTimer({{time}})">
+
+<div class="top">
+<h3>Quiz Mode</h3>
+<div id="timer"></div>
+</div>
+
+<form action="/submit" method="POST">
+
+<div class="container">
+
+<div class="question-panel">
+
+{% for q in questions %}
+
+<div class="question" id="q{{loop.index}}" style="display:none">
+
+<h3>Question {{loop.index}} / {{total}}</h3>
+
+<p>{{q}}</p>
+
+<input type="radio" name="answer" value="correct"> Option A<br>
+<input type="radio" name="answer" value="wrong"> Option B<br>
+<input type="radio" name="answer" value="wrong"> Option C<br>
+<input type="radio" name="answer" value="wrong"> Option D<br>
+
+<br>
+
+<button type="button" onclick="prev({{loop.index}})">Previous</button>
+<button type="button" onclick="next({{loop.index}}, {{total}})">Next</button>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<div class="nav">
+
+<h4>Navigate</h4>
+
+{% for q in questions %}
+<button type="button" onclick="jump({{loop.index}})">{{loop.index}}</button>
+{% endfor %}
+
+<br><br>
+<button type="submit">Submit Quiz</button>
+
+</div>
+
+</div>
+
+</form>
+
+<script>
+show(1);
+</script>
+
+</body>
+</html>
