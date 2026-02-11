@@ -45,24 +45,29 @@ def extract_text(filepath):
         text += page.extract_text() + "\n"
     return text
 
-import re
 
 def parse_questions(text):
 
-    # Remove multiple spaces
-    text = re.sub(r'\s+', ' ', text)
-
-    # Find patterns like "46) Question text .... a) ... b) ... c) ... d) ..."
-    pattern = r'\d+\)\s.*?(?=\s\d+\)|$)'
-
-    matches = re.findall(pattern, text)
+    import re
 
     questions = []
 
-    for m in matches:
-        # Ignore instruction blocks that are too long
-        if len(m) < 1000:
-            questions.append(m.strip())
+    # Clean text
+    text = text.replace("\r", " ")
+    text = re.sub(r'\s+', ' ', text)
+
+    # Look for patterns like: "1) .... 2) ...."
+    parts = re.split(r'\s(?=\d+\))', text)
+
+    for p in parts:
+
+        # Only take segments that look like real questions
+        if re.match(r'\d+\)', p.strip()):
+            q = p.strip()
+
+            # Ignore very long instruction pages
+            if len(q) < 1500:
+                questions.append(q)
 
     return questions
 
@@ -117,7 +122,8 @@ def quiz():
     with open("temp_questions.txt", "r", encoding="utf-8") as f:
         data = f.read()
 
-    questions = data.split("\n---\n")
+    questions = [q for q in data.split("\n---\n") if q.strip()]
+
 
     return render_template("quiz.html",
                            questions=questions,
