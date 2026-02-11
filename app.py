@@ -4,6 +4,21 @@ import os
 import sqlite3
 
 app = Flask(__name__)
+import re
+
+def parse_forum_solution(text):
+
+    answers = {}
+
+    pattern = r'Q\.(\d+)\)[\s\S]*?Ans\)\s*([A-Da-d])'
+
+    matches = re.findall(pattern, text)
+
+    for qno, ans in matches:
+        answers[int(qno)] = ans.upper()
+
+    return answers
+
 app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_12345")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
