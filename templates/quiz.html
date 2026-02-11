@@ -20,14 +20,19 @@
 
 <div class="question" id="q{{loop.index}}" style="display:none">
 
-<h3>Question {{loop.index}} / {{total}}</h3>
+<h3>Question {{ current + 1 }} / {{ total }}</h3>
 
-<p id="text{{loop.index}}">{{q}}</p>
+<p>{{ questions[current].question }}</p>
 
-<input type="radio"> Option A<br>
-<input type="radio"> Option B<br>
-<input type="radio"> Option C<br>
-<input type="radio"> Option D<br>
+<div class="options">
+{% for option in questions[current].options %}
+    <label>
+        <input type="radio" name="answer">
+        {{ option }}
+    </label><br>
+{% endfor %}
+</div>
+
 
 <hr>
 
