@@ -1,3 +1,9 @@
+var answers = {};
+
+function selectAnswer(qno, option) {
+    answers[qno] = option;
+}
+
 function show(n) {
     let qs = document.getElementsByClassName("question");
 
