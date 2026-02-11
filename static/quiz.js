@@ -60,3 +60,20 @@ function saveQuestion(i) {
 
     alert("Saved to Question Bank!");
 }
+function submitQuiz() {
+
+    fetch("/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ answers: answers })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(
+            "Final Score: " + data.score +
+            "\nCorrect: " + data.correct +
+            "\nWrong: " + data.wrong +
+            "\nUnattempted: " + data.unattempted
+        );
+    });
+}
