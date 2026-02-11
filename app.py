@@ -85,6 +85,9 @@ def upload():
 
     text = extract_text(path)
     questions = parse_questions(text)
+    print("---- DEBUG INFO ----")
+    print("Text Length:", len(text))
+    print("Questions Extracted:", len(questions))
 
     session["questions"] = questions
 
