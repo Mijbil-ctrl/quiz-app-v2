@@ -7,9 +7,9 @@
 <body onload="startTimer({{time}})">
 
 <div class="top">
-<h3>Quiz Mode</h3>
-<div id="timer"></div>
-<a href="/bank">My Question Bank</a>
+    <h3>Quiz Mode</h3>
+    <div id="timer"></div>
+    <a href="/bank">My Question Bank</a>
 </div>
 
 <div class="container">
@@ -27,7 +27,9 @@
 <div class="options">
 {% for option in q.options %}
     <label>
-        <input type="radio" name="q{{loop.index}}">
+        <input type="radio" 
+               name="q{{loop.index}}" 
+               onclick="selectAnswer('{{loop.index}}', '{{option[0]}}')">
         {{ option }}
     </label><br>
 {% endfor %}
@@ -69,6 +71,13 @@ Save to My Bank
 <button onclick="jump({{loop.index}})">{{loop.index}}</button>
 {% endfor %}
 
+<br><br>
+
+<!-- NEW SUBMIT BUTTON -->
+<button onclick="submitQuiz()" style="background:green;color:white;padding:10px;">
+Submit Quiz
+</button>
+
 </div>
 
 </div>
@@ -79,4 +88,3 @@ show(1);
 
 </body>
 </html>
-
