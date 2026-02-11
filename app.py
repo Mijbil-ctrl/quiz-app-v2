@@ -45,29 +45,24 @@ def extract_text(filepath):
         text += page.extract_text() + "\n"
     return text
 
+import re
+
 def parse_questions(text):
 
-    lines = text.split("\n")
+    # Remove multiple spaces
+    text = re.sub(r'\s+', ' ', text)
+
+    # Find patterns like "46) Question text .... a) ... b) ... c) ... d) ..."
+    pattern = r'\d+\)\s.*?(?=\s\d+\)|$)'
+
+    matches = re.findall(pattern, text)
+
     questions = []
 
-    buffer = ""
-
-    for line in lines:
-        line = line.strip()
-
-        if not line:
-            continue
-
-        # detect new question start (numbers like 1), 2), 3)
-        if line[0].isdigit() and (")" in line[:4]):
-            if buffer:
-                questions.append(buffer)
-            buffer = line
-        else:
-            buffer += " " + line
-
-    if buffer:
-        questions.append(buffer)
+    for m in matches:
+        # Ignore instruction blocks that are too long
+        if len(m) < 1000:
+            questions.append(m.strip())
 
     return questions
 
