@@ -122,26 +122,36 @@ def home():
 import json
 
 
-@app.route('/upload', methods=['POST'])
+
+@app.route("/upload", methods=["POST"])
 def upload():
 
-    file = request.files['pdf']
+    qp = request.files.get("question_pdf")
+    sol = request.files.get("solution_pdf")
 
-    path = os.path.join(UPLOAD_FOLDER, file.filename)
-    file.save(path)
+    if not qp or not sol:
+        return "Both Question Paper and Solution PDFs are required"
 
-    text = extract_text(path)
-    questions = parse_questions(text)
+    qp_path = os.path.join(UPLOAD_FOLDER, qp.filename)
+    sol_path = os.path.join(UPLOAD_FOLDER, sol.filename)
 
-    print("---- DEBUG INFO ----")
-    print("Text Length:", len(text))
-    print("Questions Extracted:", len(questions))
+    qp.save(qp_path)
+    sol.save(sol_path)
 
-    # SAVE QUESTIONS AS JSON INSTEAD OF PLAIN TEXT
-    with open("temp_questions.json", "w", encoding="utf-8") as f:
-        json.dump(questions, f)
+    qp_text = extract_text(qp_path)
+    sol_text = extract_text(sol_path)
 
-    session["questions_loaded"] = True
+    questions = parse_questions(qp_text)
+    answers = parse_forum_solution(sol_text)
+
+    print("Questions:", len(questions))
+    print("Answers Found:", len(answers))
+
+    for i, q in enumerate(questions):
+        qno = i + 1
+        q["correct"] = answers.get(qno)
+
+    session["questions"] = questions
 
     return redirect(url_for("settings"))
 
