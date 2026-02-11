@@ -31,3 +31,27 @@ body {
     color: white;
     padding: 10px;
 }
+.nav-btn {
+    margin: 4px;
+    padding: 8px;
+}
+
+.attempted {
+    background-color: #3498db;
+    color: white;
+}
+
+.correct {
+    background-color: #2ecc71 !important;
+    color: white;
+}
+
+.wrong {
+    background-color: #e74c3c !important;
+    color: white;
+}
+
+.correct-answer {
+    border: 2px solid green;
+    padding: 5px;
+}
