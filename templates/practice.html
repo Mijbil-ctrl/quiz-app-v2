@@ -1,0 +1,65 @@
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Practice from My Question Bank</h2>
+
+<form method="POST">
+
+Subject:
+<select name="subject">
+<option value="">All</option>
+{% for s in subjects %}
+<option>{{s[0]}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+Topic:
+<select name="topic">
+<option value="">All</option>
+{% for t in topics %}
+<option>{{t[0]}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+Subtopic:
+<select name="subtopic">
+<option value="">All</option>
+{% for st in subtopics %}
+<option>{{st[0]}}</option>
+{% endfor %}
+</select>
+
+<br><br>
+
+Time Limit:
+
+<select name="time">
+<option value="30">30 Minutes</option>
+<option value="60">60 Minutes</option>
+<option value="90">90 Minutes</option>
+</select>
+
+<br><br>
+
+<button type="submit">Start Practice Quiz</button>
+
+</form>
+
+<br>
+
+<a href="/bank">View My Saved Questions</a>
+
+</div>
+
+</body>
+</html>
