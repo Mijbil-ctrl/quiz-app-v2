@@ -280,5 +280,19 @@ if __name__ == '__main__':
     import os
 port = int(os.environ.get("PORT", 5000))
 app.run(host="0.0.0.0", port=port)
+import re
+
+def parse_forum_solution(text):
+
+    answers = {}
+
+    pattern = r'Q\.(\d+)\)[\s\S]*?Ans\)\s*([A-Da-d])'
+
+    matches = re.findall(pattern, text)
+
+    for qno, ans in matches:
+        answers[int(qno)] = ans.upper()
+
+    return answers
 
 
