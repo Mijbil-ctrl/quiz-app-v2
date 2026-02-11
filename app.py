@@ -48,6 +48,7 @@ def extract_text(filepath):
 
 import re
 
+
 def parse_questions(text):
 
     questions = []
@@ -64,9 +65,25 @@ def parse_questions(text):
         for line in lines:
             line = line.strip()
 
+            # REMOVE UNWANTED JUNK LINES
+            if any(x in line for x in [
+                "100% 75% 50% 0%",
+                "Forum Learning Centre",
+                "helpdesk@",
+                "Page",
+                "SFG",
+                "admissions@",
+                "forumias.com"
+            ]):
+                continue
+
             # Detect options (a), (b), (c), (d)
-            if re.match(r'^[a-d]\)', line):
-                options.append(line[2:].strip())
+            if re.match(r'^[a-d]\)', line.lower()):
+                option_clean = line[2:].strip()
+
+                # ignore empty or garbage options
+                if option_clean and len(option_clean) < 200:
+                    options.append(option_clean)
 
             # Stop collecting if next question begins
             elif re.match(r'^Q\.\d+\)', line):
@@ -75,7 +92,14 @@ def parse_questions(text):
             else:
                 question_text += " " + line
 
+        # FINAL CLEANUP OF QUESTION TEXT
         question_text = question_text.strip()
+
+        # Remove extra unwanted patterns from question
+        question_text = re.sub(r'100%\s*75%\s*50%\s*0%', '', question_text)
+        question_text = re.sub(r'Forum.*', '', question_text)
+        question_text = re.sub(r'Page\s*\d+.*', '', question_text)
+        question_text = re.sub(r'\s+', ' ', question_text)
 
         # Only accept if real MCQ detected
         if question_text and len(options) >= 2:
