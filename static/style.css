@@ -1,0 +1,33 @@
+body {
+    font-family: Arial;
+    background: #f2f2f2;
+}
+
+.box {
+    background: white;
+    padding: 30px;
+    margin: 50px auto;
+    width: 50%;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+}
+
+.question-panel {
+    width: 70%;
+    padding: 20px;
+}
+
+.nav {
+    width: 30%;
+    background: #ddd;
+    padding: 10px;
+}
+
+.top {
+    background: black;
+    color: white;
+    padding: 10px;
+}
