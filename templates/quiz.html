@@ -9,9 +9,8 @@
 <div class="top">
 <h3>Quiz Mode</h3>
 <div id="timer"></div>
+<a href="/bank">My Question Bank</a>
 </div>
-
-<form action="/submit" method="POST">
 
 <div class="container">
 
@@ -23,17 +22,34 @@
 
 <h3>Question {{loop.index}} / {{total}}</h3>
 
-<p>{{q}}</p>
+<p id="text{{loop.index}}">{{q}}</p>
 
-<input type="radio" name="answer" value="correct"> Option A<br>
-<input type="radio" name="answer" value="wrong"> Option B<br>
-<input type="radio" name="answer" value="wrong"> Option C<br>
-<input type="radio" name="answer" value="wrong"> Option D<br>
+<input type="radio"> Option A<br>
+<input type="radio"> Option B<br>
+<input type="radio"> Option C<br>
+<input type="radio"> Option D<br>
 
-<br>
+<hr>
 
-<button type="button" onclick="prev({{loop.index}})">Previous</button>
-<button type="button" onclick="next({{loop.index}}, {{total}})">Next</button>
+<h4>Save This Question</h4>
+
+Subject:  
+<input id="subject{{loop.index}}" list="subs"><br>
+
+Topic:  
+<input id="topic{{loop.index}}" list="topics"><br>
+
+Subtopic:  
+<input id="subtopic{{loop.index}}"><br><br>
+
+<button onclick="saveQuestion({{loop.index}})">
+Save to My Bank
+</button>
+
+<br><br>
+
+<button onclick="prev({{loop.index}})">Previous</button>
+<button onclick="next({{loop.index}}, {{total}})">Next</button>
 
 </div>
 
@@ -46,17 +62,12 @@
 <h4>Navigate</h4>
 
 {% for q in questions %}
-<button type="button" onclick="jump({{loop.index}})">{{loop.index}}</button>
+<button onclick="jump({{loop.index}})">{{loop.index}}</button>
 {% endfor %}
 
-<br><br>
-<button type="submit">Submit Quiz</button>
-
 </div>
 
 </div>
-
-</form>
 
 <script>
 show(1);
@@ -64,3 +75,4 @@ show(1);
 
 </body>
 </html>
+
