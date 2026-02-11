@@ -5,6 +5,9 @@ import sqlite3
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "super_secret_key_12345")
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+
 
 
 UPLOAD_FOLDER = "uploads"
