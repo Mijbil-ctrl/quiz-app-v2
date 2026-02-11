@@ -62,6 +62,19 @@ function saveQuestion(i) {
 }
 function submitQuiz() {
 
+    let answers = {};
+
+    let total = document.querySelectorAll(".question").length;
+
+    for (let i = 1; i <= total; i++) {
+
+        let selected = document.querySelector(`input[name="q${i}"]:checked`);
+
+        if (selected) {
+            answers[i] = selected.parentElement.innerText.trim();
+        }
+    }
+
     fetch("/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,14 +82,60 @@ function submitQuiz() {
     })
     .then(res => res.json())
     .then(data => {
+
         alert(
-            "Final Score: " + data.score +
+            "Score: " + data.score +
             "\nCorrect: " + data.correct +
             "\nWrong: " + data.wrong +
             "\nUnattempted: " + data.unattempted
         );
+
+        reviewMode(data);
     });
 }
+function reviewMode(resultData) {
+
+    fetch("current_quiz.json")
+    .then(res => res.json())
+    .then(questions => {
+
+        questions.forEach((q, index) => {
+
+            let qno = index + 1;
+
+            let correct = q.correct;
+
+            let selected = document.querySelector(`input[name="q${qno}"]:checked`);
+
+            let options = document.querySelectorAll(`#q${qno} .options label`);
+
+            options.forEach(opt => {
+
+                let text = opt.innerText.trim();
+
+                // Highlight correct answer
+                if (text.startsWith(correct)) {
+                    opt.classList.add("correct");
+                }
+
+                // Highlight wrong selection
+                if (selected && opt.contains(selected) && text.charAt(0) !== correct) {
+                    opt.classList.add("wrong");
+                }
+            });
+
+            // Color navigation
+            if (selected) {
+                if (selected.parentElement.innerText.trim().startsWith(correct)) {
+                    document.getElementById("nav" + qno).classList.add("correct");
+                } else {
+                    document.getElementById("nav" + qno).classList.add("wrong");
+                }
+            }
+        });
+    });
+}
+
 function markAttempted(qno) {
     document.getElementById("nav" + qno).classList.add("attempted");
 }
