@@ -42,13 +42,31 @@ def extract_text(filepath):
     return text
 
 def parse_questions(text):
-    parts = text.split("Q.")
+
+    lines = text.split("\n")
     questions = []
 
-    for p in parts[1:]:
-        questions.append(p.strip())
+    buffer = ""
+
+    for line in lines:
+        line = line.strip()
+
+        if not line:
+            continue
+
+        # detect new question start (numbers like 1), 2), 3)
+        if line[0].isdigit() and (")" in line[:4]):
+            if buffer:
+                questions.append(buffer)
+            buffer = line
+        else:
+            buffer += " " + line
+
+    if buffer:
+        questions.append(buffer)
 
     return questions
+
 
 
 # ---------- ROUTES ----------
